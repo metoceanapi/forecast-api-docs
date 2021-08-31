@@ -5,13 +5,6 @@ from os import getenv
 from datetime import datetime
 
 
-# Below is an example of selecting two geographical points, one in the ocean -37.7935, 174.7842 and the other on
-# # land -37.7734, 175.2158. The variable selected wave.height is an ocean variable. In the repsonse output a few
-# things can be seen:
-# * Every odd data value is null e.g. [1.099627, null, ...].
-# * Every even noData value is 0 which mean the data is valid e.g. [0, 1, ...], but every odd has a noData value
-# * The order of point.data in the response determind the order of the output of both data and noData.
-
 # NOTE: don't for get to set "apikey" env, or the default below.
 resp = post(
     "https://forecast-v2.metoceanapi.com/point/time",
