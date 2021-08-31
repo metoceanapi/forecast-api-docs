@@ -33,7 +33,7 @@ wind_north = data["variables"]["wind.speed.northward.at-10m"]
 wind_east = data["variables"]["wind.speed.eastward.at-10m"]
 
 # You will usually want to make a masked arrays with the "noData" field. 0 == Good data, any other value indicates
-# the "data" value is null, look up the field "noDataReason" to find out why.
+# the "data" value is null, look up the field "noDataReasons" to find out why.
 wind_v = masked_array(wind_north["data"], mask=wind_north["noData"], dtype=float64)
 wind_u = masked_array(wind_east["data"], mask=wind_east["noData"], dtype=float64)
 
