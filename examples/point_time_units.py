@@ -31,7 +31,7 @@ data = resp.json()
 temperature = data["variables"]["air.temperature.at-2m"]
 
 # You will usually want to make a masked arrays with the "noData" field. 0 == Good data, any other value indicates
-# the "data" value is null, look up the field "noDataReason" to find out why.
+# the "data" value is null, look up the field "noDataReasons" to find out why.
 temp = masked_array(temperature["data"], mask=temperature["noData"], dtype=float64)
 units = temperature["units"]
 
