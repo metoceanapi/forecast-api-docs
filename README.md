@@ -14,5 +14,10 @@ Python:
 * [point_time_masks.py](examples/point_time_masks.py) shows you how to deal with masks / no-data values and the reason for why data was NULL.
 * [point_time_units.py](examples/point_time_units.py) basic unit converstion for the variable's data.
 * [point_time_wind_vectors.py](examples/point_time_vectors.py) how to convert vectors like wind and ocean into magnitude and direction.
+* [point_time_rain.py](examples/point_time_rain.py) say the chances of rain in text found from the variable `precipitation.rate`
 
+To run the examples you will need to set the ENV `apikey` e.g.
+```
+apikey=MYAPIKEY python3 examples/point_time_wind_vectors.py
+```
 
