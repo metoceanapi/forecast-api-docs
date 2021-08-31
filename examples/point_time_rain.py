@@ -1,6 +1,6 @@
 from requests import post
 from numpy import float64
-from numpy.ma import masked_array
+from numpy.ma import masked_array, is_masked
 from os import getenv
 from datetime import datetime
 
@@ -20,12 +20,9 @@ resp = post(
         "points": [{
           "lon": 174.7842,
           "lat": -37.7935
-        }, {
-          "lon": 175.2158,
-          "lat": -37.7734
         }],
         "variables": [
-            "wave.height"
+            "precipitation.rate"
         ],
         "time": {
             "from": "{:%Y-%m-%dT00:00:00Z}".format(datetime.utcnow()),
@@ -39,18 +36,30 @@ if resp.status_code != 200:
     raise ValueError("{}: {}", resp.status_code, resp.text)
 
 data = resp.json()
-wave_height = data["variables"]["wave.height"]
+var = data["variables"]["precipitation.rate"]
 
 # You will usually want to make a masked arrays with the "noData" field. 0 == Good data, any other value indicates
 # the "data" value is null, look up the field "noDataReason" to find out why.
-wave_height_masked = masked_array(wave_height["data"], mask=wave_height["noData"], dtype=float64)
-print(wave_height_masked)
+precipitation_rate = masked_array(var["data"], mask=var["noData"], dtype=float64)
 
-# If you want to find the reason for noData you can checkout noDataReasons.
-# Note: need to flip the key value.
-no_data_reason = {v: k for k, v in data["noDataReasons"].items()}
-print([no_data_reason[v] for v in wave_height["noData"]])
+# https://en.wikipedia.org/wiki/Rain
+# Light rain — when the precipitation rate is < 2.5 mm (0.098 in) per hour
+# Moderate rain — when the precipitation rate is between 2.5 mm (0.098 in) - 7.6 mm (0.30 in) or 10 mm (0.39 in) per hour[106][107]
+# Heavy rain — when the precipitation rate is > 7.6 mm (0.30 in) per hour,[106] or between 10 mm (0.39 in) and 50 mm (2.0 in) per hour[107]
+# Violent rain — when the precipitation rate is > 50 mm (2.0 in) per hour[107]
+chance_of_rain = []
+for p_mm in precipitation_rate[:]:
+    if is_masked(p_mm):
+        chance_of_rain.append("")
+    elif p_mm < 1:
+        chance_of_rain.append("none")
+    elif p_mm < 2.5:
+        chance_of_rain.append("light")
+    elif p_mm < 7.6:
+        chance_of_rain.append("moderate")
+    elif p_mm < 50:
+        chance_of_rain.append("heavy")
+    else:
+        chance_of_rain.append("extreme")
 
-# the output looks like ['GOOD', 'MASK_LAND', 'GOOD', 'MASK_LAND', 'GOOD', 'MASK_LAND']
-# MASK_LAND, or is near to land and we don't have a model with data that close to land.
-# "GOOD": 0 will always equal zero, but no other reason's number is guaranteed.
+print(chance_of_rain)

@@ -5,6 +5,7 @@ from os import getenv
 from datetime import datetime
 
 
+# NOTE: don't for get to set "apikey" env, or the default below.
 resp = post(
     "https://forecast-v2.metoceanapi.com/point/time",
     headers={"x-api-key": getenv("apikey", "MYAPIKEY")},
@@ -28,12 +29,12 @@ if resp.status_code != 200:
     raise ValueError("{}: {}", resp.status_code, resp.text)
 
 data = resp.json()
-temperature = data["variables"]["air.temperature.at-2m"]
+var = data["variables"]["air.temperature.at-2m"]
 
 # You will usually want to make a masked arrays with the "noData" field. 0 == Good data, any other value indicates
 # the "data" value is null, look up the field "noDataReasons" to find out why.
-temp = masked_array(temperature["data"], mask=temperature["noData"], dtype=float64)
-units = temperature["units"]
+temperature = masked_array(var["data"], mask=var["noData"], dtype=float64)
+units = var["units"]
 
 # Convert Kelvin to Degree C.
 # You have a couple of options for converting units. https://forecast-v2.metoceanapi.com/units/
@@ -49,13 +50,13 @@ units = temperature["units"]
 #         offset: -459.67
 #         multiplier: 1.8
 
-print("{}: {}".format(units, temp))
+print("{}: {}".format(units, temperature))
 
 if units == "degreeK":
-    temp += -273.15
+    temperature += -273.15
 
 elif units == "degreeF":
-    temp *= 0.555556
-    temp += -17.777778
+    temperature *= 0.555556
+    temperature += -17.777778
 
-print("degreeC: {}".format(temp))
+print("degreeC: {}".format(temperature))

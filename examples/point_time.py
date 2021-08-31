@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 
 
+# NOTE: don't for get to set "apikey" env, or the default below.
 resp = post(
     "https://forecast-v2.metoceanapi.com/point/time",
     headers={"x-api-key": getenv("apikey", "MYAPIKEY")},
